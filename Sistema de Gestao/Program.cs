@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 class Program
@@ -53,7 +53,7 @@ class Program
     static void AdicionarTarefa()
     {
         Console.Write("Digite o nome da tarefa: ");
-        string tarefa = Console.ReadLine(); // Removido o operador de nulidade
+        string tarefa = Console.ReadLine();
 
         if (!string.IsNullOrWhiteSpace(tarefa))
         {
@@ -91,76 +91,59 @@ class Program
         string input = Console.ReadLine();
         int origem;
 
-        while (string.IsNullOrEmpty(input) || !int.TryParse(input, out origem))
+        while (string.IsNullOrEmpty(input) || !int.TryParse(input, out origem) || origem < 1 || origem > 3)
         {
-            Console.WriteLine("Entrada inválida. Por favor, insira um número.");
+            Console.WriteLine("Entrada inválida. Por favor, insira um número entre 1 e 3.");
             input = Console.ReadLine();
         }
 
-        Console.Write("Digite o índice da tarefa que deseja mover (começando de 0): ");
+        List<string> listaOrigem;
+        if (origem == 1) listaOrigem = aFazer;
+        else if (origem == 2) listaOrigem = emProgresso;
+        else listaOrigem = concluido;
+
+        if (listaOrigem.Count == 0)
+        {
+            Console.WriteLine("A lista escolhida está vazia. Não é possível mover tarefas.");
+            return;
+        }
+
+        Console.WriteLine("Escolha a tarefa para mover:");
+        for (int i = 0; i < listaOrigem.Count; i++)
+        {
+            Console.WriteLine($"{i + 1} - {listaOrigem[i]}");
+        }
+
+        Console.Write("Digite o número da tarefa que deseja mover: ");
         input = Console.ReadLine();
         int indice;
 
-        while (string.IsNullOrEmpty(input) || !int.TryParse(input, out indice))
+        while (string.IsNullOrEmpty(input) || !int.TryParse(input, out indice) || indice < 1 || indice > listaOrigem.Count)
         {
-            Console.WriteLine("Entrada inválida. Por favor, insira um número.");
+            Console.WriteLine("Entrada inválida. Por favor, insira um número válido.");
             input = Console.ReadLine();
         }
+        indice--;
 
-        string tarefaMovida = null;
+        string tarefaMovida = listaOrigem[indice];
+        listaOrigem.RemoveAt(indice);
 
-        switch (origem)
+        if (origem == 1)
         {
-            case 1:
-                if (indice >= 0 && indice < aFazer.Count)
-                {
-                    tarefaMovida = aFazer[indice];
-                    aFazer.RemoveAt(indice);
-                    emProgresso.Add(tarefaMovida);
-                    Console.WriteLine("Tarefa movida para 'Em Progresso'.");
-                }
-                else
-                {
-                    Console.WriteLine("Índice inválido.");
-                }
-                break;
-
-            case 2:
-                if (indice >= 0 && indice < emProgresso.Count)
-                {
-                    tarefaMovida = emProgresso[indice];
-                    emProgresso.RemoveAt(indice);
-                    concluido.Add(tarefaMovida);
-                    Console.WriteLine("Tarefa movida para 'Concluído'.");
-                }
-                else
-                {
-                    Console.WriteLine("Índice inválido.");
-                }
-                break;
-
-            case 3:
-                if (indice >= 0 && indice < concluido.Count)
-                {
-                    tarefaMovida = concluido[indice];
-                    concluido.RemoveAt(indice);
-                    emProgresso.Add(tarefaMovida);
-                    Console.WriteLine("Tarefa movida para 'Em Progresso'.");
-                }
-                else
-                {
-                    Console.WriteLine("Índice inválido.");
-                }
-                break;
-
-            default:
-                Console.WriteLine("Opção inválida.");
-                break;
+            emProgresso.Add(tarefaMovida);
+            Console.WriteLine("Tarefa movida para 'Em Progresso'.");
+        }
+        else if (origem == 2)
+        {
+            concluido.Add(tarefaMovida);
+            Console.WriteLine("Tarefa movida para 'Concluído'.");
+        }
+        else 
+        {
+            emProgresso.Add(tarefaMovida);
+            Console.WriteLine("Tarefa movida para 'Em Progresso'.");
         }
 
-        if (tarefaMovida != null)
-        {
-            Console.WriteLine($"Tarefa '{tarefaMovida}' movida com sucesso.");
-        }
+        Console.WriteLine($"Tarefa '{tarefaMovida}' movida com sucesso.");
     }
 }
